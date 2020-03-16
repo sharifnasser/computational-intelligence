@@ -1,8 +1,8 @@
-from random import randrange, sample
+import random
 
 board_size = 8
 
-queens = [[i, randrange(board_size)] for i in range(board_size)]
+queens = [[i, random.randrange(board_size)] for i in range(board_size)]
 
 def count_crossing_queens(positions):
         crossing_values = 0
@@ -28,3 +28,12 @@ print(queens)
 threats = count_attacking_queens(queens)
 print(threats)
 
+if(threats != 0):
+        row_selection = random.randrange(board_size)
+        queen_selection = queens[row_selection]
+        new_column = random.choice(list(range(0, queen_selection[1])) + list(range(queen_selection[1]+1, board_size)))
+        
+        neighbor = queens
+        neighbor[row_selection][1] = new_column
+
+        print(neighbor)
