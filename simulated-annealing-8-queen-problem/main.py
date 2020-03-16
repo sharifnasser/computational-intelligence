@@ -28,7 +28,9 @@ print(queens)
 threats = count_attacking_queens(queens)
 print(threats)
 
-if(threats != 0):
+while(threats != 0):
+
+        # Generate neighbor
         row_selection = random.randrange(board_size)
         queen_selection = queens[row_selection]
         new_column = random.choice(list(range(0, queen_selection[1])) + list(range(queen_selection[1]+1, board_size)))
@@ -37,3 +39,9 @@ if(threats != 0):
         neighbor[row_selection][1] = new_column
 
         print(neighbor)
+
+        new_threats = count_attacking_queens(neighbor)
+
+        if new_threats <= threats:
+                queens = neighbor
+                threats = new_threats
