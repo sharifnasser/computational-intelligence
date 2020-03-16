@@ -1,4 +1,7 @@
 import random
+import time
+
+start = time.time()
 
 board_size = 8
 
@@ -45,3 +48,5 @@ while(threats != 0):
         if new_threats <= threats:
                 queens = neighbor
                 threats = new_threats
+
+print('time = ', time.time() - start)
