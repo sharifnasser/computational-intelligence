@@ -4,14 +4,12 @@ from math import exp
 board_size = 8
 
 # Initialize parameters
-cadena_intentos_aceptados = 40
-cadena_intentos_maximo = 80
-cadena_maximo_sin_mejora = 1
-frecuencia_impresion = 5
+len_accepted_attempts_markov = 40 # maximum markov chain length in accepted attempts
+len_attempts_markov = 80 # maximum markov chain length
+max_chains_no_improve = 100 # maximum number of markov chains without improvement
 alfa = 0.80
 beta = 1.2
-minimo_razon_aceptados = 0.90
-
+min_acceptance_rate = 0.90
 c = 0.1
 
 def count_crossing_queens(positions):
@@ -33,86 +31,84 @@ def count_attacking_queens(queens):
         
         return attacks
 
-def crear_vecino(queens):
-        row_selection = random.randrange(board_size)
-        queen_selection = queens[row_selection]
-        new_column = random.choice(list(range(0, queen_selection[1])) + list(range(queen_selection[1]+1, board_size)))
+def generate_neighbor(queens):
+        """ Generate a neighbor board from a previous board """
+        row_selection = random.randrange(board_size) # choose a random row
+        queen_selection = queens[row_selection] # choose the queen in that row
+        new_column = random.choice(list(range(0, queen_selection[1])) + \
+                                   list(range(queen_selection[1]+1, board_size))) # generate a new column
         
-        neighbor = queens
-        neighbor[row_selection][1] = new_column
+        neighbor = queens # copy queens in neighbor
+        neighbor[row_selection][1] = new_column # move selected queen to new column to generate neighbor
+
         return neighbor
 
-def acepta_intento(u, v):
-        evaluacion_v = count_attacking_queens(v)
-        evaluacion_u = count_attacking_queens(u)
-        if evaluacion_v < count_attacking_queens(u):
-                return True
+def accept_state(evaluation_old, evaluation_new):
+        """ Indicate if the new state must be accepted to minimize the cost function """
+
+        if evaluation_new < evaluation_old:
+                return True # accept if new state minimizes cost function
         else:
-                return (random.random() < exp( -1 * (evaluacion_v - evaluacion_u) / c ))
-                
+                return ( random.random() < exp( - (evaluation_new - evaluation_old) / c )) # apply metropolis algorithm                
 
-def cadena_markov(u):
+def markov_chain(old):
+        """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
         global c
-        intentos = 0
-        intentos_aceptados = 0
-        print(u)
-        while (intentos_aceptados < cadena_intentos_aceptados) and (intentos < cadena_intentos_maximo):
-                v = crear_vecino(u)
-                evaluacion_v = count_attacking_queens(v)
+        attempts = 0
+        accepted_attempts = 0
 
-                intentos += 1
-                if acepta_intento(u, v):
-                        c = c * (evaluacion_v / evaluacion_u)
+        while (accepted_attempts < len_accepted_attempts_markov) and (attempts < len_attempts_markov):
+                new = generate_neighbor(old) # generate neighbor
+                evaluation_old = count_attacking_queens(old) # evaluate old state with cost function
+                evaluation_new = count_attacking_queens(new) # evaluate new state with cost function
+                attempts += 1 # count attempts
 
-                        u = v
-                        intentos_aceptados += 1
+                if accept_state(evaluation_old, evaluation_new):
+                        old = new # change state
+                        accepted_attempts += 1 # count accepted attempts
+                        # c = c * (evaluation_new / evaluation_old) # algorithm improvement
 
-        razon_aceptacion = 1.0 * (intentos_aceptados / intentos)
-        u_final = u
+        acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
-        return u_final, razon_aceptacion
+        return new, acceptance_rate
 
-def calcular_temperatura_inicial(u):
+def init_temperature(old):
+        """ Initialize temperature according to miminum acceptance rate """
         global c
-        razon_aceptacion = 0
-        while razon_aceptacion < minimo_razon_aceptados:
-                [u, razon_aceptacion] = cadena_markov(u)
-                c = c * beta
+        acceptance_rate = 0
+        while acceptance_rate < min_acceptance_rate:
+                [new, acceptance_rate] = markov_chain(old) # get acceptance rate with current temperature
+                c = c * beta # increase temperature
 
-        u_inicial = u
+        return new
 
-        return u_inicial
-
-def recocido(u):
+def simulated_annealing(old):
+        """ Run simulated annealing algorithm """
         global c
-        cadena_sin_mejora = 0
-        anterior = u
-        while (cadena_sin_mejora < cadena_maximo_sin_mejora):
-                u, razon_aceptacion = cadena_markov(u)
-                evaluacion_anterior = count_attacking_queens(anterior)
-                evaluacion_u = count_attacking_queens(u)
+        chains_no_improve = 0
+        while (chains_no_improve < max_chains_no_improve):
+                new, _ = markov_chain(old) # run markov chain
+                evaluation_old = count_attacking_queens(old) # evaluate old state with cost function
+                evaluation_new = count_attacking_queens(new) # evaluate new state with cost function
 
-                if evaluacion_u >= evaluacion_anterior:
-                        cadena_sin_mejora += 1
+                if evaluation_new >= evaluation_old:
+                        chains_no_improve += 1
                 else:
-                        cadena_sin_mejora = 0
+                        chains_no_improve = 0
 
-                anterior = u
-                c = c * alfa
+                old = new # update state
+                c = c * alfa # decrease temperature
 
-        return u
+        return new
 
-estado_inicial = queens = [[i, random.randrange(board_size)] for i in range(board_size)]
+original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
 
-intentos = 1
-u = estado_inicial
-evaluacion_u = count_attacking_queens(estado_inicial)
+board = init_temperature(original_board)
 
-mejor = u
-mejor_intentos = intentos
+print('Initial temperature:', c)
 
-u = calcular_temperatura_inicial(estado_inicial)
-print('temp incial', c)
+final_board = simulated_annealing(board)
+final_evaluation = count_attacking_queens(final_board)
 
-print(recocido(u))
-print(count_attacking_queens(u))
+print(final_board)
+print(final_evaluation)
