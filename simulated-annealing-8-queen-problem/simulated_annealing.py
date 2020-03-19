@@ -1,4 +1,5 @@
 import random
+import time
 from math import exp
 
 board_size = 8
@@ -101,6 +102,8 @@ def simulated_annealing(old):
 
         return new
 
+start = time.time()
+
 original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
 
 board = init_temperature(original_board)
@@ -112,3 +115,5 @@ final_evaluation = count_attacking_queens(final_board)
 
 print(final_board)
 print(final_evaluation)
+
+print('time = ', time.time() - start)
