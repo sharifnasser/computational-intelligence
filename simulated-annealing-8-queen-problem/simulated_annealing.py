@@ -15,20 +15,25 @@ min_acceptance_rate = 0.90
 temperature = 0.1
 
 def count_crossing_queens(positions):
+        """ Count queens being threatened directly or indirectly """
         crossing_values = 0
+
         for position in positions:
-                crossing_values += positions.count(position) - 1
+                crossing_values += positions.count(position) - 1 # count number of duplicate positions
+
         return crossing_values
 
 def count_attacking_queens(queens):
+        """ Count number of threats directly or indirectly, either in columns, diagonals and reverse diagonals """
         columns = []
         diagonals = []
         reverse_diagonals = []
         for queen in queens:
-                columns.append(queen[1])
-                diagonals.append(queen[1] - queen[0])
-                reverse_diagonals.append(queen[1] + queen[0] - (board_size + 1))
+                columns.append(queen[1]) # column position
+                diagonals.append(queen[1] - queen[0]) # diagonal position (column - row)
+                reverse_diagonals.append(queen[1] + queen[0] - (board_size + 1)) # reverse diagonal position (c + r - (N+1))
 
+        # sum number of threats in columns, diagonals and reverse_diagonals
         attacks = count_crossing_queens(columns) + count_crossing_queens(diagonals) + count_crossing_queens(reverse_diagonals)
         
         return attacks
@@ -36,6 +41,7 @@ def count_attacking_queens(queens):
 def generate_neighbor(queens):
         """ Generate a neighbor board from a previous board """
         neighbor = deepcopy(queens) # copy queens in neighbor
+        
         row_selection = random.randrange(board_size) # choose a random row
         queen_selection = neighbor[row_selection] # choose the queen in that row
         new_column = random.choice(list(range(0, queen_selection[1])) + \
@@ -47,7 +53,6 @@ def generate_neighbor(queens):
 
 def accept_state(evaluation_old, evaluation_new):
         """ Indicate if the new state must be accepted to minimize the cost function """
-
         if evaluation_new < evaluation_old:
                 return True # accept if new state minimizes cost function
         else:
@@ -76,7 +81,7 @@ def markov_chain(state):
 def init_temperature(state):
         """ Initialize temperature according to miminum acceptance rate """
         global temperature
-        acceptance_rate = 0
+
         _, acceptance_rate = markov_chain(state) # get initial acceptance rate
 
         while acceptance_rate < min_acceptance_rate:
@@ -87,11 +92,13 @@ def simulated_annealing(state):
         """ Run simulated annealing algorithm """
         global temperature
         chains_no_improve = 0
+
         while (chains_no_improve < max_chains_no_improve):
                 new_state, _ = markov_chain(state) # run markov chain
                 evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
                 evaluation_new = count_attacking_queens(new_state) # evaluate new state with cost function
 
+                # count consecutive markvov chains without improvement in cost function
                 if evaluation_new >= evaluation_old:
                         chains_no_improve += 1
                 else:
