@@ -100,8 +100,8 @@ def simulated_annealing(state):
 
 # Initialize parameters
 board_size = 8
-len_accepted_attempts_markov = 25 # maximum markov chain length in accepted attempts
-len_attempts_markov = 50 # maximum markov chain length
+len_accepted_attempts_markov = 40 # maximum markov chain length in accepted attempts
+len_attempts_markov = 80 # maximum markov chain length
 max_chains_no_improve = 20 # maximum number of markov chains without improvement
 alfa = 0.80
 beta = 1.2
