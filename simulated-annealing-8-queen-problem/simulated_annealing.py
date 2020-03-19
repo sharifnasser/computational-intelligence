@@ -59,13 +59,13 @@ def markov_chain(state):
         accepted_attempts = 0
 
         while (accepted_attempts < len_accepted_attempts_markov) and (attempts < len_attempts_markov):
-                new = generate_neighbor(state) # generate neighbor
+                new_state = generate_neighbor(state) # generate neighbor
                 evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
-                evaluation_new = count_attacking_queens(new) # evaluate new state with cost function
+                evaluation_new = count_attacking_queens(new_state) # evaluate new state with cost function
                 attempts += 1 # count attempts
 
                 if accept_state(evaluation_old, evaluation_new):
-                        state = new # change state
+                        state = new_state # change state
                         accepted_attempts += 1 # count accepted attempts
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
@@ -88,16 +88,16 @@ def simulated_annealing(state):
         global temperature
         chains_no_improve = 0
         while (chains_no_improve < max_chains_no_improve):
-                new, _ = markov_chain(state) # run markov chain
+                new_state, _ = markov_chain(state) # run markov chain
                 evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
-                evaluation_new = count_attacking_queens(new) # evaluate new state with cost function
+                evaluation_new = count_attacking_queens(new_state) # evaluate new state with cost function
 
                 if evaluation_new >= evaluation_old:
                         chains_no_improve += 1
                 else:
                         chains_no_improve = 0
 
-                state = new # update state
+                state = new_state # update state
                 temperature = temperature * alfa # decrease temperature
 
         return state
