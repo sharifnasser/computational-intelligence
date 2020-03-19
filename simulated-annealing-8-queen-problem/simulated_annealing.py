@@ -55,7 +55,6 @@ def accept_state(evaluation_old, evaluation_new):
 
 def markov_chain(old):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
-        global temperature
         attempts = 0
         accepted_attempts = 0
 
