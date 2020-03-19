@@ -11,7 +11,7 @@ max_chains_no_improve = 100 # maximum number of markov chains without improvemen
 alfa = 0.80
 beta = 1.2
 min_acceptance_rate = 0.90
-c = 0.1
+temperature = 0.1
 
 def count_crossing_queens(positions):
         crossing_values = 0
@@ -50,11 +50,11 @@ def accept_state(evaluation_old, evaluation_new):
         if evaluation_new < evaluation_old:
                 return True # accept if new state minimizes cost function
         else:
-                return ( random.random() < exp( - (evaluation_new - evaluation_old) / c )) # apply metropolis algorithm                
+                return ( random.random() < exp( - (evaluation_new - evaluation_old) / temperature )) # apply metropolis algorithm                
 
 def markov_chain(old):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
-        global c
+        global temperature
         attempts = 0
         accepted_attempts = 0
 
@@ -67,7 +67,7 @@ def markov_chain(old):
                 if accept_state(evaluation_old, evaluation_new):
                         old = new # change state
                         accepted_attempts += 1 # count accepted attempts
-                        # c = c * (evaluation_new / evaluation_old) # algorithm improvement
+                        # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
         acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
@@ -75,17 +75,17 @@ def markov_chain(old):
 
 def init_temperature(old):
         """ Initialize temperature according to miminum acceptance rate """
-        global c
+        global temperature
         acceptance_rate = 0
-        while acceptance_rate < min_acceptance_rate:
-                [new, acceptance_rate] = markov_chain(old) # get acceptance rate with current temperature
-                c = c * beta # increase temperature
+        _, acceptance_rate = markov_chain(old) # get initial acceptance rate
 
-        return new
+        while acceptance_rate < min_acceptance_rate:
+                temperature = temperature * beta # increase temperature
+                _, acceptance_rate = markov_chain(old) # get acceptance rate with current temperature
 
 def simulated_annealing(old):
         """ Run simulated annealing algorithm """
-        global c
+        global temperature
         chains_no_improve = 0
         while (chains_no_improve < max_chains_no_improve):
                 new, _ = markov_chain(old) # run markov chain
@@ -98,7 +98,7 @@ def simulated_annealing(old):
                         chains_no_improve = 0
 
                 old = new # update state
-                c = c * alfa # decrease temperature
+                temperature = temperature * alfa # decrease temperature
 
         return new
 
@@ -106,11 +106,11 @@ start = time.time()
 
 original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
 
-board = init_temperature(original_board)
+init_temperature(original_board)
 
-print('Initial temperature:', c)
+print('Initial temperature:', temperature)
 
-final_board = simulated_annealing(board)
+final_board = simulated_annealing(original_board)
 final_evaluation = count_attacking_queens(final_board)
 
 print(final_board)
