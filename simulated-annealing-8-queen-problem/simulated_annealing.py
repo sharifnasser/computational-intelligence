@@ -53,43 +53,43 @@ def accept_state(evaluation_old, evaluation_new):
         else:
                 return ( random.random() < exp( - (evaluation_new - evaluation_old) / temperature )) # apply metropolis algorithm                
 
-def markov_chain(old):
+def markov_chain(state):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
         attempts = 0
         accepted_attempts = 0
 
         while (accepted_attempts < len_accepted_attempts_markov) and (attempts < len_attempts_markov):
-                new = generate_neighbor(old) # generate neighbor
-                evaluation_old = count_attacking_queens(old) # evaluate old state with cost function
+                new = generate_neighbor(state) # generate neighbor
+                evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
                 evaluation_new = count_attacking_queens(new) # evaluate new state with cost function
                 attempts += 1 # count attempts
 
                 if accept_state(evaluation_old, evaluation_new):
-                        old = new # change state
+                        state = new # change state
                         accepted_attempts += 1 # count accepted attempts
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
         acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
-        return new, acceptance_rate
+        return state, acceptance_rate
 
-def init_temperature(old):
+def init_temperature(state):
         """ Initialize temperature according to miminum acceptance rate """
         global temperature
         acceptance_rate = 0
-        _, acceptance_rate = markov_chain(old) # get initial acceptance rate
+        _, acceptance_rate = markov_chain(state) # get initial acceptance rate
 
         while acceptance_rate < min_acceptance_rate:
                 temperature = temperature * beta # increase temperature
-                _, acceptance_rate = markov_chain(old) # get acceptance rate with current temperature
+                _, acceptance_rate = markov_chain(state) # get acceptance rate with current temperature
 
-def simulated_annealing(old):
+def simulated_annealing(state):
         """ Run simulated annealing algorithm """
         global temperature
         chains_no_improve = 0
         while (chains_no_improve < max_chains_no_improve):
-                new, _ = markov_chain(old) # run markov chain
-                evaluation_old = count_attacking_queens(old) # evaluate old state with cost function
+                new, _ = markov_chain(state) # run markov chain
+                evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
                 evaluation_new = count_attacking_queens(new) # evaluate new state with cost function
 
                 if evaluation_new >= evaluation_old:
@@ -97,10 +97,10 @@ def simulated_annealing(old):
                 else:
                         chains_no_improve = 0
 
-                old = new # update state
+                state = new # update state
                 temperature = temperature * alfa # decrease temperature
 
-        return new
+        return state
 
 start = time.time()
 
