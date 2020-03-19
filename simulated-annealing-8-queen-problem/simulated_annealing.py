@@ -1,5 +1,6 @@
 import random
 import time
+from copy import deepcopy
 from math import exp
 
 board_size = 8
@@ -34,12 +35,12 @@ def count_attacking_queens(queens):
 
 def generate_neighbor(queens):
         """ Generate a neighbor board from a previous board """
+        neighbor = deepcopy(queens) # copy queens in neighbor
         row_selection = random.randrange(board_size) # choose a random row
-        queen_selection = queens[row_selection] # choose the queen in that row
+        queen_selection = neighbor[row_selection] # choose the queen in that row
         new_column = random.choice(list(range(0, queen_selection[1])) + \
-                                   list(range(queen_selection[1]+1, board_size))) # generate a new column
+                                   list(range(queen_selection[1]+1, board_size))) # generate a random new column different from original
         
-        neighbor = queens # copy queens in neighbor
         neighbor[row_selection][1] = new_column # move selected queen to new column to generate neighbor
 
         return neighbor
