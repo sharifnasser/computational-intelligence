@@ -3,17 +3,6 @@ import time
 from copy import deepcopy
 from math import exp
 
-board_size = 8
-
-# Initialize parameters
-len_accepted_attempts_markov = 40 # maximum markov chain length in accepted attempts
-len_attempts_markov = 80 # maximum markov chain length
-max_chains_no_improve = 100 # maximum number of markov chains without improvement
-alfa = 0.80
-beta = 1.2
-min_acceptance_rate = 0.90
-temperature = 0.1
-
 def count_crossing_queens(positions):
         """ Count queens being threatened directly or indirectly """
         crossing_values = 0
@@ -108,6 +97,16 @@ def simulated_annealing(state):
                 temperature = temperature * alfa # decrease temperature
 
         return state
+
+# Initialize parameters
+board_size = 8
+len_accepted_attempts_markov = 25 # maximum markov chain length in accepted attempts
+len_attempts_markov = 50 # maximum markov chain length
+max_chains_no_improve = 20 # maximum number of markov chains without improvement
+alfa = 0.80
+beta = 1.2
+min_acceptance_rate = 0.90
+temperature = 0.1
 
 start = time.time()
 
