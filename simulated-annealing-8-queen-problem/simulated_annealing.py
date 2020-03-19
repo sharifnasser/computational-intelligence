@@ -3,6 +3,17 @@ from math import exp
 
 board_size = 8
 
+# Initialize parameters
+cadena_intentos_aceptados = 40
+cadena_intentos_maximo = 80
+cadena_maximo_sin_mejora = 1
+frecuencia_impresion = 5
+alfa = 0.80
+beta = 1.2
+minimo_razon_aceptados = 0.90
+
+c = 0.1
+
 def count_crossing_queens(positions):
         crossing_values = 0
         for position in positions:
@@ -21,27 +32,6 @@ def count_attacking_queens(queens):
         attacks = count_crossing_queens(columns) + count_crossing_queens(diagonals) + count_crossing_queens(reverse_diagonals)
         
         return attacks
-
-# Initialize parameters
-
-cadena_intentos_aceptados = 40
-cadena_intentos_maximo = 80
-cadena_maximo_sin_mejora = 1
-frecuencia_impresion = 5
-alfa = 0.80
-beta = 1.2
-minimo_razon_aceptados = 0.90
-
-estado_inicial = queens = [[i, random.randrange(board_size)] for i in range(board_size)]
-
-intentos = 1
-u = estado_inicial
-evaluacion_u = count_attacking_queens(estado_inicial)
-
-mejor = u
-mejor_intentos = intentos
-
-c = 0.1
 
 def crear_vecino(queens):
         row_selection = random.randrange(board_size)
@@ -111,6 +101,15 @@ def recocido(u):
                 c = c * alfa
 
         return u
+
+estado_inicial = queens = [[i, random.randrange(board_size)] for i in range(board_size)]
+
+intentos = 1
+u = estado_inicial
+evaluacion_u = count_attacking_queens(estado_inicial)
+
+mejor = u
+mejor_intentos = intentos
 
 u = calcular_temperatura_inicial(estado_inicial)
 print('temp incial', c)
