@@ -49,7 +49,7 @@ def accept_state(evaluation_old, evaluation_new):
 
 def markov_chain(state):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
-        global new_state_count
+        global new_state_count, best_found_list
         attempts = 0
         accepted_attempts = 0
 
@@ -66,6 +66,9 @@ def markov_chain(state):
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
         acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
+
+        if ( new_state_count % best_found_freq ) == 0:
+                best_found_list.append(count_attacking_queens(state))
 
         return state, acceptance_rate
 
@@ -110,6 +113,8 @@ beta = 1.2
 min_acceptance_rate = 0.90
 temperature = 0.1
 new_state_count = 0
+best_found_freq = 1
+best_found_list = []
 
 start = time.time()
 
