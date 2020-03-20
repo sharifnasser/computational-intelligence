@@ -49,6 +49,7 @@ def accept_state(evaluation_old, evaluation_new):
 
 def markov_chain(state):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
+        global new_state_count
         attempts = 0
         accepted_attempts = 0
 
@@ -56,6 +57,7 @@ def markov_chain(state):
                 new_state = generate_neighbor(state) # generate neighbor
                 evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
                 evaluation_new = count_attacking_queens(new_state) # evaluate new state with cost function
+                new_state_count += 1
                 attempts += 1 # count attempts
 
                 if accept_state(evaluation_old, evaluation_new):
@@ -107,6 +109,7 @@ alfa = 0.80
 beta = 1.2
 min_acceptance_rate = 0.90
 temperature = 0.1
+new_state_count = 0
 
 start = time.time()
 
@@ -116,6 +119,7 @@ init_temperature(original_board)
 
 print('Initial temperature:', temperature)
 
+new_state_count = 0
 final_board = simulated_annealing(original_board)
 final_evaluation = count_attacking_queens(final_board)
 
