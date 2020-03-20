@@ -1,5 +1,6 @@
 import random
 import time
+import matplotlib.pyplot as plt
 from copy import deepcopy
 from math import exp
 
@@ -65,10 +66,10 @@ def markov_chain(state):
                         accepted_attempts += 1 # count accepted attempts
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
-        acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
+                if ( new_state_count % best_found_freq ) == 0:
+                        best_found_list.append(count_attacking_queens(state))
 
-        if ( new_state_count % best_found_freq ) == 0:
-                best_found_list.append(count_attacking_queens(state))
+        acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
         return state, acceptance_rate
 
@@ -124,7 +125,9 @@ init_temperature(original_board)
 
 print('Initial temperature:', temperature)
 
+
 new_state_count = 0
+best_found_list = []
 final_board = simulated_annealing(original_board)
 final_evaluation = count_attacking_queens(final_board)
 
@@ -132,3 +135,7 @@ print(final_board)
 print(final_evaluation)
 
 print('time = ', time.time() - start)
+
+plt.plot(best_found_list)
+plt.show()
+
