@@ -19,10 +19,10 @@ def count_attacking_queens(queens):
         columns = []
         diagonals = []
         reverse_diagonals = []
-        for queen in queens:
-                columns.append(queen[1]) # column position
-                diagonals.append(queen[1] - queen[0]) # diagonal position (column - row)
-                reverse_diagonals.append(queen[1] + queen[0] - (board_size + 1)) # reverse diagonal position (c + r - (N+1))
+        for row, column in enumerate(queens):
+                columns.append(column) # column position
+                diagonals.append(column - row) # diagonal position
+                reverse_diagonals.append(column + row - (board_size + 1)) # reverse diagonal position
 
         # sum number of threats in columns, diagonals and reverse_diagonals
         attacks = count_crossing_queens(columns) + count_crossing_queens(diagonals) + count_crossing_queens(reverse_diagonals)
@@ -35,12 +35,19 @@ def generate_neighbor(queens):
         
         row_selection = random.randrange(board_size) # choose a random row
         queen_selection = neighbor[row_selection] # choose the queen in that row
-        new_column = random.choice(list(range(0, queen_selection[1])) + \
-                                   list(range(queen_selection[1]+1, board_size))) # generate a random new column different from original
+        new_column = random.choice(list(range(0, queen_selection)) + \
+                                   list(range(queen_selection+1, board_size))) # generate a random column different from original
         
-        neighbor[row_selection][1] = new_column # move selected queen to new column to generate neighbor
+        neighbor[row_selection] = new_column # move selected queen to new column to generate neighbor
 
         return neighbor
+
+def print_board(queens):
+        for queen in queens:
+                for column in range(board_size):
+                        if column == queen: print('Q ', end='')
+                        else: print('. ', end='')
+                print()
 
 def accept_state(evaluation_old, evaluation_new):
         """ Indicate if the new state must be accepted to minimize the cost function """
@@ -119,7 +126,7 @@ best_found_algorithm_evaluation = []
 for algorithm_evaluation in range(len_algorithm_evaluation):
         start = time.time()
 
-        original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
+        original_board = [random.randrange(board_size) for i in range(board_size)] # initialize queens positions
 
         init_temperature(original_board)
 
@@ -129,7 +136,7 @@ for algorithm_evaluation in range(len_algorithm_evaluation):
         final_board = simulated_annealing(original_board)
         final_evaluation = count_attacking_queens(final_board)
 
-        print(final_board)
+        print_board(final_board)
         print(final_evaluation)
 
         print('time = ', time.time() - start)
@@ -142,6 +149,8 @@ best_founds['std'] = best_founds.std(axis=1)
 best_founds['mean+std'] = best_founds['mean'] + best_founds['std']
 best_founds['mean-std'] = best_founds['mean'] - best_founds['std']
 
+plt.ylabel('Best found')
+plt.xlabel('# Queens Movements')
 plt.plot(best_founds['mean'])
 plt.plot(best_founds['mean+std'], linestyle='dashed', alpha=0.5)
 plt.plot(best_founds['mean-std'], linestyle='dashed', alpha=0.5)
