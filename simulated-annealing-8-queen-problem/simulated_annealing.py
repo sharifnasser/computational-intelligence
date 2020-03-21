@@ -67,7 +67,7 @@ def markov_chain(state):
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
                 if ( new_state_count % best_found_freq ) == 0:
-                        best_found_list.append(count_attacking_queens(state))
+                        best_found_list.append([new_state_count, count_attacking_queens(state)])
 
         acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
@@ -114,7 +114,7 @@ beta = 1.2
 min_acceptance_rate = 0.90
 temperature = 0.1
 new_state_count = 0
-best_found_freq = 1
+best_found_freq = 5
 best_found_list = []
 
 start = time.time()
@@ -124,7 +124,6 @@ original_board = [[i, random.randrange(board_size)] for i in range(board_size)] 
 init_temperature(original_board)
 
 print('Initial temperature:', temperature)
-
 
 new_state_count = 0
 best_found_list = []
@@ -136,6 +135,8 @@ print(final_evaluation)
 
 print('time = ', time.time() - start)
 
-plt.plot(best_found_list)
+print(*zip(*best_found_list))
+
+plt.plot(*zip(*best_found_list))
 plt.show()
 
