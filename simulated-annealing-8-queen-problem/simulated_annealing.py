@@ -115,31 +115,33 @@ board_size = 8
 len_accepted_attempts_markov = 40 # maximum markov chain length in accepted attempts
 len_attempts_markov = 80 # maximum markov chain length
 max_chains_no_improve = 20 # maximum number of markov chains without improvement
-alfa = 0.80
-beta = 1.2
-min_acceptance_rate = 0.90
-temperature = 0.1
-best_found_list = []
-len_algorithm_evaluation = 10
-best_found_algorithm_evaluation = []
+alfa = 0.80 # temperature decrease rate
+beta = 1.2 # temperature increase rate
+min_acceptance_rate = 0.90 # initialize temperature with a value that results in acceptance rate
+temperature = 0.1 # initial value of temperature
+best_found_list = [] # save best state found by number of neighbors created or attempts to move a queen
+len_algorithm_evaluation = 10 # number of algorithm evaluations
+best_found_algorithm_evaluation = [] # best found list for each algorithm evaluation
 
 for algorithm_evaluation in range(len_algorithm_evaluation):
-        start = time.time()
+        start_time = time.time()
 
         original_board = [random.randrange(board_size) for i in range(board_size)] # initialize queens positions
+        # the columns are chosen randomly and the rows are determined by the position in the list
+        print('Original Board')
+        print_board(original_board)
+        print('Initial evaluation: ', count_attacking_queens(original_board))
 
         init_temperature(original_board)
-
-        print('Initial temperature:', temperature)
+        print('Initial Temperature: ', temperature)
 
         best_found_list = []
         final_board = simulated_annealing(original_board)
-        final_evaluation = count_attacking_queens(final_board)
-
+        print('Final Board')
         print_board(final_board)
-        print(final_evaluation)
+        print('Final evaluation: ', count_attacking_queens(final_board))
 
-        print('time = ', time.time() - start)
+        print('Execution Time: ', time.time() - start_time)
 
         best_found_algorithm_evaluation.append(best_found_list.copy())
 
@@ -150,7 +152,7 @@ best_founds['mean+std'] = best_founds['mean'] + best_founds['std']
 best_founds['mean-std'] = best_founds['mean'] - best_founds['std']
 
 plt.ylabel('Best found')
-plt.xlabel('# Queens Movements')
+plt.xlabel('# Attempts of Queens Movements')
 plt.plot(best_founds['mean'])
 plt.plot(best_founds['mean+std'], linestyle='dashed', alpha=0.5)
 plt.plot(best_founds['mean-std'], linestyle='dashed', alpha=0.5)
