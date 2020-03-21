@@ -42,6 +42,13 @@ def generate_neighbor(queens):
 
         return neighbor
 
+def print_board(queens):
+        for queen in queens:
+                for column in range(board_size):
+                        if column == queen: print('Q ', end='')
+                        else: print('. ', end='')
+                print()
+
 def accept_state(evaluation_old, evaluation_new):
         """ Indicate if the new state must be accepted to minimize the cost function """
         if evaluation_new < evaluation_old:
@@ -129,7 +136,7 @@ for algorithm_evaluation in range(len_algorithm_evaluation):
         final_board = simulated_annealing(original_board)
         final_evaluation = count_attacking_queens(final_board)
 
-        print(final_board)
+        print_board(final_board)
         print(final_evaluation)
 
         print('time = ', time.time() - start)
