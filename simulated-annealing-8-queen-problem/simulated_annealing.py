@@ -149,6 +149,8 @@ best_founds['std'] = best_founds.std(axis=1)
 best_founds['mean+std'] = best_founds['mean'] + best_founds['std']
 best_founds['mean-std'] = best_founds['mean'] - best_founds['std']
 
+plt.ylabel('Best found')
+plt.xlabel('# Queens Movements')
 plt.plot(best_founds['mean'])
 plt.plot(best_founds['mean+std'], linestyle='dashed', alpha=0.5)
 plt.plot(best_founds['mean-std'], linestyle='dashed', alpha=0.5)
