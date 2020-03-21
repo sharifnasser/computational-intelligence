@@ -50,7 +50,7 @@ def accept_state(evaluation_old, evaluation_new):
 
 def markov_chain(state):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
-        global new_state_count, best_found_list
+        global best_found_list
         attempts = 0
         accepted_attempts = 0
 
@@ -58,7 +58,6 @@ def markov_chain(state):
                 new_state = generate_neighbor(state) # generate neighbor
                 evaluation_old = count_attacking_queens(state) # evaluate old state with cost function
                 evaluation_new = count_attacking_queens(new_state) # evaluate new state with cost function
-                new_state_count += 1
                 attempts += 1 # count attempts
 
                 if accept_state(evaluation_old, evaluation_new):
@@ -66,8 +65,7 @@ def markov_chain(state):
                         accepted_attempts += 1 # count accepted attempts
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
 
-                if ( new_state_count % best_found_freq ) == 0:
-                        best_found_list.append([new_state_count, count_attacking_queens(state)])
+                best_found_list.append(count_attacking_queens(state))
 
         acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
@@ -113,8 +111,6 @@ alfa = 0.80
 beta = 1.2
 min_acceptance_rate = 0.90
 temperature = 0.1
-new_state_count = 0
-best_found_freq = 5
 best_found_list = []
 
 start = time.time()
@@ -125,7 +121,6 @@ init_temperature(original_board)
 
 print('Initial temperature:', temperature)
 
-new_state_count = 0
 best_found_list = []
 final_board = simulated_annealing(original_board)
 final_evaluation = count_attacking_queens(final_board)
@@ -135,8 +130,8 @@ print(final_evaluation)
 
 print('time = ', time.time() - start)
 
-print(*zip(*best_found_list))
+print(best_found_list)
 
-plt.plot(*zip(*best_found_list))
+plt.plot(best_found_list)
 plt.show()
 
