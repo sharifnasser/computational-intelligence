@@ -1,5 +1,6 @@
 import random
 import time
+import pandas as pd
 import matplotlib.pyplot as plt
 from copy import deepcopy
 from math import exp
@@ -133,9 +134,16 @@ for algorithm_evaluation in range(len_algorithm_evaluation):
 
         print('time = ', time.time() - start)
 
-        best_found_algorithm_evaluation.append(best_found_list)
+        best_found_algorithm_evaluation.append(best_found_list.copy())
 
+best_founds = pd.DataFrame.from_records(best_found_algorithm_evaluation).transpose()
+best_founds['mean'] = best_founds.mean(axis=1)
+best_founds['std'] = best_founds.std(axis=1)
+best_founds['mean+std'] = best_founds['mean'] + best_founds['std']
+best_founds['mean-std'] = best_founds['mean'] - best_founds['std']
 
-plt.plot(best_found_list)
+plt.plot(best_founds['mean'])
+plt.plot(best_founds['mean+std'], linestyle='dashed', alpha=0.5)
+plt.plot(best_founds['mean-std'], linestyle='dashed', alpha=0.5)
+
 plt.show()
-
