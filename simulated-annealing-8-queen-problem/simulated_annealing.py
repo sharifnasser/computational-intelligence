@@ -112,25 +112,29 @@ beta = 1.2
 min_acceptance_rate = 0.90
 temperature = 0.1
 best_found_list = []
+len_algorithm_evaluation = 10
+best_found_algorithm_evaluation = []
 
-start = time.time()
+for algorithm_evaluation in range(len_algorithm_evaluation):
+        start = time.time()
 
-original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
+        original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
 
-init_temperature(original_board)
+        init_temperature(original_board)
 
-print('Initial temperature:', temperature)
+        print('Initial temperature:', temperature)
 
-best_found_list = []
-final_board = simulated_annealing(original_board)
-final_evaluation = count_attacking_queens(final_board)
+        best_found_list = []
+        final_board = simulated_annealing(original_board)
+        final_evaluation = count_attacking_queens(final_board)
 
-print(final_board)
-print(final_evaluation)
+        print(final_board)
+        print(final_evaluation)
 
-print('time = ', time.time() - start)
+        print('time = ', time.time() - start)
 
-print(best_found_list)
+        best_found_algorithm_evaluation.append(best_found_list)
+
 
 plt.plot(best_found_list)
 plt.show()
