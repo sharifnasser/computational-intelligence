@@ -1,5 +1,7 @@
 import random
 import time
+import pandas as pd
+import matplotlib.pyplot as plt
 from copy import deepcopy
 from math import exp
 
@@ -49,6 +51,7 @@ def accept_state(evaluation_old, evaluation_new):
 
 def markov_chain(state):
         """ Run markov chain with old state. Return newest state and acceptance rate of attempts """
+        global best_found_list
         attempts = 0
         accepted_attempts = 0
 
@@ -62,6 +65,8 @@ def markov_chain(state):
                         state = new_state # change state
                         accepted_attempts += 1 # count accepted attempts
                         # temperature = temperature * (evaluation_new / evaluation_old) # algorithm improvement
+
+                best_found_list.append(count_attacking_queens(state))
 
         acceptance_rate = 1.0 * (accepted_attempts / attempts) # calculate attempts acceptance rate
 
@@ -100,26 +105,45 @@ def simulated_annealing(state):
 
 # Initialize parameters
 board_size = 8
-len_accepted_attempts_markov = 25 # maximum markov chain length in accepted attempts
-len_attempts_markov = 50 # maximum markov chain length
+len_accepted_attempts_markov = 40 # maximum markov chain length in accepted attempts
+len_attempts_markov = 80 # maximum markov chain length
 max_chains_no_improve = 20 # maximum number of markov chains without improvement
 alfa = 0.80
 beta = 1.2
 min_acceptance_rate = 0.90
 temperature = 0.1
+best_found_list = []
+len_algorithm_evaluation = 10
+best_found_algorithm_evaluation = []
 
-start = time.time()
+for algorithm_evaluation in range(len_algorithm_evaluation):
+        start = time.time()
 
-original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
+        original_board = [[i, random.randrange(board_size)] for i in range(board_size)] # initialize queens positions
 
-init_temperature(original_board)
+        init_temperature(original_board)
 
-print('Initial temperature:', temperature)
+        print('Initial temperature:', temperature)
 
-final_board = simulated_annealing(original_board)
-final_evaluation = count_attacking_queens(final_board)
+        best_found_list = []
+        final_board = simulated_annealing(original_board)
+        final_evaluation = count_attacking_queens(final_board)
 
-print(final_board)
-print(final_evaluation)
+        print(final_board)
+        print(final_evaluation)
 
-print('time = ', time.time() - start)
+        print('time = ', time.time() - start)
+
+        best_found_algorithm_evaluation.append(best_found_list.copy())
+
+best_founds = pd.DataFrame.from_records(best_found_algorithm_evaluation).transpose()
+best_founds['mean'] = best_founds.mean(axis=1)
+best_founds['std'] = best_founds.std(axis=1)
+best_founds['mean+std'] = best_founds['mean'] + best_founds['std']
+best_founds['mean-std'] = best_founds['mean'] - best_founds['std']
+
+plt.plot(best_founds['mean'])
+plt.plot(best_founds['mean+std'], linestyle='dashed', alpha=0.5)
+plt.plot(best_founds['mean-std'], linestyle='dashed', alpha=0.5)
+
+plt.show()
