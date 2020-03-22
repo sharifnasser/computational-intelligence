@@ -132,29 +132,32 @@ for algorithm_evaluation in range(len_algorithm_evaluation):
         print_board(original_board)
         print('Initial evaluation: ', count_attacking_queens(original_board))
 
-        init_temperature(original_board)
+        init_temperature(original_board) # initialize temperature in order to start with a given acceptance
         print('Initial Temperature: ', temperature)
 
-        best_found_list = []
+        best_found_list = [] # list best found in each attempt to change the position of a queen
         final_board = simulated_annealing(original_board)
         print('Final Board')
         print_board(final_board)
         print('Final evaluation: ', count_attacking_queens(final_board))
 
-        print('Execution Time: ', time.time() - start_time)
+        print('Execution Time: ', time.time() - start_time) # calculate execution time
 
-        best_found_algorithm_evaluation.append(best_found_list.copy())
+        best_found_algorithm_evaluation.append(best_found_list.copy()) # create a list of list to summarize results
 
-best_founds = pd.DataFrame.from_records(best_found_algorithm_evaluation).transpose()
+# Display results in a pandas DataFrame and a line plot
+best_founds = pd.DataFrame.from_records(best_found_algorithm_evaluation).transpose().ffill(axis=0)
 best_founds['mean'] = best_founds.mean(axis=1)
 best_founds['std'] = best_founds.std(axis=1)
 best_founds['mean+std'] = best_founds['mean'] + best_founds['std']
 best_founds['mean-std'] = best_founds['mean'] - best_founds['std']
+print(best_founds)
 
-plt.ylabel('Best found')
+plt.title('Best Found Curve')
+plt.ylabel('Best Found')
 plt.xlabel('# Attempts of Queens Movements')
+plt.grid(True)
 plt.plot(best_founds['mean'])
 plt.plot(best_founds['mean+std'], linestyle='dashed', alpha=0.5)
 plt.plot(best_founds['mean-std'], linestyle='dashed', alpha=0.5)
-
 plt.show()
