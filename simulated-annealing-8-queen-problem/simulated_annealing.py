@@ -22,7 +22,7 @@ def count_attacking_queens(queens):
         for row, column in enumerate(queens):
                 columns.append(column) # column position
                 diagonals.append(column - row) # diagonal position
-                reverse_diagonals.append(column + row - (board_size + 1)) # reverse diagonal position
+                reverse_diagonals.append(column + row) # reverse diagonal position
 
         # sum number of threats in columns, diagonals and reverse_diagonals
         attacks = count_crossing_queens(columns) + count_crossing_queens(diagonals) + count_crossing_queens(reverse_diagonals)
