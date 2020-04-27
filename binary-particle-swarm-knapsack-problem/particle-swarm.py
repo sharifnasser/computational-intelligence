@@ -6,23 +6,26 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from math import exp
 
-number_of_objects = 10
-swarm_size = 10
-max_weight = 165
-max_velocity = 1
-alpha = 2
-beta = 2
-r1 = np.random.uniform(0, 1)
-r2 = np.random.uniform(0, 1)
-swarm = np.array([np.random.randint(2, size=number_of_objects) for i in range(swarm_size)])
-particle_best = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)])
-swarm_best = np.zeros(number_of_objects, dtype=int)
-velocity = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)])
-weights = np.array([23, 31, 29, 44, 53, 38, 63, 85, 89, 82])
-gains = np.array([92, 57, 49, 68, 60, 43, 67, 84, 87, 72])
+# initialize parameters
+max_velocity = 1 # maximum velocity for particles
+alpha = 2 # cognitive  scaling
+beta = 2 # social scaling
+swarm_size = 10 # number of particles in the swarm
 
-max_runs_no_improve = 100 # maximum number of markov chains without improvement
-best_found_list = [] # save best state found by number of neighbors created or attempts to move a queen
+# initialize knapsack problem
+number_of_objects = 10 # number of objects available
+max_weight = 165 # maximum weight possible
+weights = np.array([23, 31, 29, 44, 53, 38, 63, 85, 89, 82]) # weights of objects
+gains = np.array([92, 57, 49, 68, 60, 43, 67, 84, 87, 72]) # gains of objects
+swarm = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # list of particles initialized in 0s
+
+particle_best = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array of best local of each particle
+swarm_best = np.zeros(number_of_objects, dtype=int) # initialize best particle in the swarm
+velocity = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)])
+
+
+max_runs_no_improve = 100 # maximum number of runs without improvement
+best_found_list = [] # save best combination found by number of particles movements
 len_algorithm_evaluation = 10 # number of algorithm evaluations
 best_found_algorithm_evaluation = [] # best found list for each algorithm evaluation
 
@@ -44,7 +47,7 @@ for algorithm_evaluation in range(len_algorithm_evaluation):
     while runs_no_improve < max_runs_no_improve:
         for particle in range(swarm_size):
             for bit in range(number_of_objects):
-                velocity[particle][bit] = velocity[particle][bit] + alpha * r1 * (particle_best[particle][bit] - swarm[particle][bit]) + beta * r2 * (swarm_best[bit] - swarm[particle][bit])
+                velocity[particle][bit] = velocity[particle][bit] + alpha * np.random.uniform(0, 1) * (particle_best[particle][bit] - swarm[particle][bit]) + beta * np.random.uniform(0, 1) * (swarm_best[bit] - swarm[particle][bit])
                 velocity[particle][bit] = limit_velocity(velocity[particle][bit])
                 swarm[particle][bit] = 1 if np.random.uniform(0, 1) < sigmoid(velocity[particle][bit]) else 0
 
