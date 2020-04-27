@@ -21,7 +21,7 @@ swarm = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_si
 
 particle_best = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array of best local of each particle
 swarm_best = np.zeros(number_of_objects, dtype=int) # initialize best particle in the swarm
-velocity = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)])
+velocity = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array with velocities of particles to zero
 
 
 max_runs_no_improve = 100 # maximum number of runs without improvement
@@ -30,14 +30,19 @@ len_algorithm_evaluation = 10 # number of algorithm evaluations
 best_found_algorithm_evaluation = [] # best found list for each algorithm evaluation
 
 def evaluate_combination(particle):
+    """ Return the sum of gains of the selected objects if the sum 
+    of weights does not exceed the maximum weight, otherwise return 0 """
     if sum(particle * weights) <= max_weight:
         return sum(particle * gains)
     return 0
 
 def sigmoid(x):
+    """ Return evaluation of sigmoid function for x """
     return 1 / (1 + exp(-x))
 
 def limit_velocity(velocity):
+    """ Returns +/- velocity if it does not exceed +/- maximum velocity,
+    otherwise returns +/- maximum velocity """
     return max(min(max_velocity, velocity), -max_velocity)
 
 for algorithm_evaluation in range(len_algorithm_evaluation):
