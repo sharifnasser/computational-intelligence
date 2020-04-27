@@ -8,8 +8,8 @@ from math import exp
 max_velocity = 1 # maximum velocity for particles
 alpha = 2 # cognitive  scaling
 beta = 2 # social scaling
-swarm_size = 1 # number of particles in the swarm
-max_runs_no_improve = 100 # maximum number of runs without improvement
+swarm_size = 3 # number of particles in the swarm
+max_runs_no_improve = 500 # maximum number of runs without improvement
 
 # initialize knapsack problem
 number_of_objects = 10 # number of objects available
