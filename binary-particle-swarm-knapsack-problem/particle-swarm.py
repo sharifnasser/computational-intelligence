@@ -8,7 +8,7 @@ from math import exp
 max_velocity = 1 # maximum velocity for particles
 alpha = 2 # cognitive  scaling
 beta = 2 # social scaling
-swarm_size = 10 # number of particles in the swarm
+swarm_size = 1 # number of particles in the swarm
 max_runs_no_improve = 100 # maximum number of runs without improvement
 
 # initialize knapsack problem
@@ -16,14 +16,8 @@ number_of_objects = 10 # number of objects available
 max_weight = 165 # maximum weight possible
 weights = np.array([23, 31, 29, 44, 53, 38, 63, 85, 89, 82]) # weights of objects
 gains = np.array([92, 57, 49, 68, 60, 43, 67, 84, 87, 72]) # gains of objects
-swarm = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # list of particles initialized in 0s
-
-particle_best = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array of best local of each particle
-swarm_best = np.zeros(number_of_objects, dtype=int) # initialize best particle in the swarm
-velocity = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array with velocities of particles to zero
 
 # initialize algorithm evaluation
-best_found_list = [] # save best combination found by number of particles movements
 len_algorithm_evaluation = 10 # number of algorithm evaluations
 best_found_algorithm_evaluation = [] # best found list for each algorithm evaluation
 
@@ -44,9 +38,15 @@ def limit_velocity(velocity):
     return max(min(max_velocity, velocity), -max_velocity)
 
 for algorithm_evaluation in range(len_algorithm_evaluation):
+    swarm = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # list of particles initialized in 0s
+    particle_best = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array of best local of each particle
+    swarm_best = np.zeros(number_of_objects, dtype=int) # initialize best particle in the swarm
+    velocity = np.array([np.zeros(number_of_objects, dtype=int) for i in range(swarm_size)]) # initialize array with velocities of particles to zero
+
     start_time = time.time()
     runs_no_improve = 0
 
+    best_found_list = [] # save best combination found by number of particles movements
     while runs_no_improve < max_runs_no_improve:
         for particle in range(swarm_size):
             for bit in range(number_of_objects):
